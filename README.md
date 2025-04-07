@@ -49,4 +49,4 @@ This project is licensed under the [MIT License](LICENSE) - see the LICENSE file
 
 ---
 
-*Made with ❤️ and a lot of coffee* 
+*Made with ❤️ by arevlo 
