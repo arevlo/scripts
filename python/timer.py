@@ -2,7 +2,6 @@ import time
 import os
 import psutil
 import datetime
-import winsound
 import platform
 import random
 from collections import defaultdict
@@ -13,8 +12,19 @@ import argparse
 from datetime import datetime
 from colorama import init, Fore, Style
 
+# Platform-specific imports
 if platform.system() == "Windows":
+    import winsound
     import win32gui
+elif platform.system() == "Darwin":  # macOS
+    import subprocess
+    # Try to import macOS-specific modules, with fallback if not available
+    try:
+        from AppKit import NSWorkspace
+        MACOS_WINDOW_TRACKING = True
+    except ImportError:
+        MACOS_WINDOW_TRACKING = False
+        print("Note: For full macOS window tracking, install PyObjC: pip install pyobjc-framework-AppKit")
 
 # Make sure import is at the top
 try:
@@ -33,7 +43,12 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def beep():
-    winsound.Beep(1000, 1000)
+    if platform.system() == "Windows":
+        winsound.Beep(1000, 1000)
+    elif platform.system() == "Darwin":  # macOS
+        os.system('afplay /System/Library/Sounds/Ping.aiff')
+    else:  # Linux and others
+        print('\a')  # ASCII bell character
 
 def get_color(seconds_left):
     if seconds_left <= 120:
@@ -124,6 +139,19 @@ def track_application(current_app, app_tracker):
         app_tracker[app_name] += 1
     return app_tracker
 
+def get_active_window_macos():
+    """Get the active window information on macOS"""
+    if not MACOS_WINDOW_TRACKING:
+        return "Active Window (macOS)"
+    
+    try:
+        workspace = NSWorkspace.sharedWorkspace()
+        active_app = workspace.activeApplication()
+        app_name = active_app['NSApplicationName']
+        return app_name
+    except Exception as e:
+        return f"Active Window (macOS) - Error: {str(e)}"
+
 def draw_sysinfo(app_tracker):
     cpu = psutil.cpu_percent()
     mem = psutil.virtual_memory().percent
@@ -136,6 +164,8 @@ def draw_sysinfo(app_tracker):
             top_window = win32gui.GetWindowText(win32gui.GetForegroundWindow())
         except:
             pass
+    elif platform.system() == "Darwin":  # macOS
+        top_window = get_active_window_macos()
     
     width = 80
     divider = Fore.LIGHTBLACK_EX + "─" * width + Style.RESET_ALL

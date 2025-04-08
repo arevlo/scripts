@@ -14,6 +14,7 @@ A colorful, fun terminal-based timer that helps you stay focused with encouragin
 - 📈 Generates focus reports to help you understand your work patterns
 - 🔔 Beeps when your timer is complete
 - 💾 Saves your focus history for future reference
+- 🌐 Cross-platform compatible (Windows, macOS, Linux)
 
 ### Requirements
 
@@ -22,7 +23,8 @@ A colorful, fun terminal-based timer that helps you stay focused with encouragin
   - psutil
   - colorama
   - tzlocal
-  - win32gui (Windows only)
+  - pywin32 (Windows only)
+  - pyobjc-framework-AppKit (macOS, optional for window tracking)
 
 ### Installation
 
@@ -36,6 +38,11 @@ pip install psutil colorama tzlocal
 For Windows users, also install:
 ```bash
 pip install pywin32
+```
+
+For macOS users with full window tracking:
+```bash
+pip install pyobjc-framework-AppKit
 ```
 
 ### Usage
@@ -79,6 +86,12 @@ The focus report shows:
 - Top applications used
 - Session breakdown
 - Focus patterns and suggestions
+
+### Platform-Specific Notes
+
+- **Windows**: Full application tracking and window detection
+- **macOS**: Full functionality with system sounds and application tracking (requires pyobjc-framework-AppKit)
+- **Linux**: Basic functionality with terminal bell sound (no window tracking)
 
 ### Tips
 
